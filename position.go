@@ -10,15 +10,16 @@ type Position struct {
 	board string
 }
 
+func (p Position) choose(x, o string) string {
+	if p.turn == "x" {
+		return x
+	}
+	return o
+}
+
 func (p Position) Move(i int) Position {
 	p.board = p.board[:i] + p.turn + p.board[i+1:]
-
-	switch p.turn {
-	case "x":
-		p.turn = "o"
-	case "o":
-		p.turn = "x"
-	}
+	p.turn = p.choose("o", "x")
 	return p
 }
 
