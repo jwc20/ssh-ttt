@@ -3,6 +3,8 @@ package main
 import (
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTicTacToe(t *testing.T) {
@@ -33,6 +35,8 @@ func TestTicTacToe(t *testing.T) {
 	})
 
 	t.Run("test possible moves", func(t *testing.T) {
+		assert.Equal(t, initPosition().PossibleMoves(), []int{0, 1, 2, 3, 4, 5, 6, 7, 8})
+		assert.Equal(t, initPosition().Move(1).PossibleMoves(), []int{0, 2, 3, 4, 5, 6, 7, 8})
 	})
 }
 

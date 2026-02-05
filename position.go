@@ -23,6 +23,16 @@ func (p Position) Move(i int) Position {
 	return p
 }
 
+func (p Position) PossibleMoves() []int {
+	var result []int
+	for i, piece := range strings.Split(p.board, "") {
+		if piece == " " {
+			result = append(result, i)
+		}
+	}
+	return result
+}
+
 func (p Position) String() string {
 	return fmt.Sprintf("%s.%s", p.turn, p.board)
 }
