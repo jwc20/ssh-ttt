@@ -29,8 +29,18 @@ func TestTicTacToe(t *testing.T) {
 
 	t.Run("test equal", func(t *testing.T) {
 		position := initPosition()
-		assertEqual(t, position.Move(1).String(), Position{"o", " x       "}.String())
+		assertPositionEqual(t, position.Move(1), Position{"o", " x       "})
 	})
+
+	t.Run("test possible moves", func(t *testing.T) {
+	})
+}
+
+func assertPositionEqual(t *testing.T, got, want Position) {
+	t.Helper()
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
 }
 
 func assertEqual(t *testing.T, got, want string) {
