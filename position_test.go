@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTicTacToe(t *testing.T) {
+func TestPosition(t *testing.T) {
 	t.Run("test init", func(t *testing.T) {
 		position := initPosition()
 
@@ -39,6 +39,28 @@ func TestTicTacToe(t *testing.T) {
 		assert.Equal(t, initPosition().Move(1).PossibleMoves(), []int{0, 2, 3, 4, 5, 6, 7, 8})
 	})
 }
+
+func TestIsWinFor(t *testing.T) {
+	t.Run("test no win", func(t *testing.T) {
+		assert.False(t, initPosition().isWinFor("x"))
+	})
+
+	t.Run("test row", func(t *testing.T) {
+		assert.True(t, Position{board: "xxx      "}.isWinFor("x"))
+	})
+
+	t.Run("test col", func(t *testing.T) {
+		assert.True(t, Position{board: "o  o  o  "}.isWinFor("o"))
+	})
+	t.Run("test major diagonal", func(t *testing.T) {
+		assert.True(t, Position{board: "x   x   x"}.isWinFor("x"))
+	})
+	t.Run("test minor diagonal", func(t *testing.T) {
+		assert.True(t, Position{board: "  x x x  "}.isWinFor("x"))
+	})
+}
+
+/* Asserts ****************************************************************************/
 
 func assertPositionEqual(t *testing.T, got, want Position) {
 	t.Helper()
