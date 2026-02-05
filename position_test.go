@@ -60,6 +60,20 @@ func TestIsWinFor(t *testing.T) {
 	})
 }
 
+func TestMinimax(t *testing.T) {
+	t.Run("test x wins", func(t *testing.T) {
+		assert.Equal(t, Position{board: "xxx      "}.minimax(), 6)
+	})
+
+	t.Run("test o wins", func(t *testing.T) {
+		assert.Equal(t, Position{board: "ooo      "}.minimax(), -6)
+	})
+
+	t.Run("test draw", func(t *testing.T) {
+		assert.Equal(t, Position{board: "xoxxoxoxo"}.minimax(), 0)
+	})
+}
+
 /* Asserts ****************************************************************************/
 
 func assertPositionEqual(t *testing.T, got, want Position) {

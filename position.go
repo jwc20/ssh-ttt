@@ -82,6 +82,19 @@ func (p Position) isWinFor(piece string) bool {
 	return false
 }
 
+func (p Position) minimax() int {
+	if p.isWinFor("x") {
+		return strings.Count(p.board, " ")
+	}
+	if p.isWinFor("o") {
+		return -strings.Count(p.board, " ")
+	}
+	if strings.Count(p.board, " ") == 0 {
+		return 0
+	}
+	return 0
+}
+
 func (p Position) String() string {
 	return fmt.Sprintf("%s.%s", p.turn, p.board)
 }
