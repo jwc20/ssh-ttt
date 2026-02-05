@@ -9,8 +9,8 @@ func TestTicTacToe(t *testing.T) {
 	t.Run("test init", func(t *testing.T) {
 		position := initPosition()
 
-		assertEqual(t, position.Board, strings.Repeat(" ", 9))
-		assertEqual(t, position.Turn, "x")
+		assertEqual(t, position.board, strings.Repeat(" ", 9))
+		assertEqual(t, position.turn, "x")
 	})
 }
 
