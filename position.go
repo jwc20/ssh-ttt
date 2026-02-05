@@ -1,15 +1,22 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type Position struct {
-	board string
 	turn  string
+	board string
 }
 
-func initPosition() *Position {
-	return &Position{
-		board: strings.Repeat(" ", 9),
+func (p Position) String() string {
+	return fmt.Sprintf("%s.%s", p.turn, p.board)
+}
+
+func initPosition() Position {
+	return Position{
 		turn:  "x",
+		board: strings.Repeat(" ", 9),
 	}
 }
