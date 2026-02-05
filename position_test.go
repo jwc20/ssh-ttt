@@ -29,7 +29,7 @@ func TestTicTacToe(t *testing.T) {
 
 	t.Run("test equal", func(t *testing.T) {
 		position := initPosition()
-		assertEqual(t, position.Move(1), Position{"o", " x       "}.String())
+		assertEqual(t, position.Move(1).String(), Position{"o", " x       "}.String())
 	})
 }
 
