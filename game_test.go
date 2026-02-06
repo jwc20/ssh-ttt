@@ -35,8 +35,32 @@ func TestGame(t *testing.T) {
 		assert.Equal(t, game.askForPlayer(in), -1)
 	})
 
-	t.Run("test ask for move", func(t *testing.T) {
-		assert.Equal(t, game.askForMove(), -1)
+	t.Run("test quit move", func(t *testing.T) {
+		//assert.Equal(t, game.askForMove(), -1)
+	})
+
+	t.Run("test valid move", func(t *testing.T) {
+		//assert.Equal(t, game.askForMove(), -1)
+	})
+
+	t.Run("test out of bound move", func(t *testing.T) {
+		//assert.Equal(t, game.askForMove(), -1)
+	})
+
+	t.Run("test occupied move", func(t *testing.T) {
+		//assert.Equal(t, game.askForMove(), -1)
+	})
+
+	t.Run("test quit play", func(t *testing.T) {
+		//assert.Equal(t, game.askForMove(), -1)
+	})
+
+	t.Run("test choose human (play)", func(t *testing.T) {
+		//assert.Equal(t, game.askForMove(), -1)
+	})
+
+	t.Run("test move", func(t *testing.T) {
+		//assert.Equal(t, game.askForMove(), -1)
 	})
 }
 
