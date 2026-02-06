@@ -82,6 +82,34 @@ func TestMinimax(t *testing.T) {
 	})
 }
 
+func TestBestMove(t *testing.T) {
+	t.Run("test x", func(t *testing.T) {
+		assert.Equal(t, Position{board: "xx       ", turn: "x"}.BestMove(), 2)
+	})
+
+	t.Run("test o", func(t *testing.T) {
+		assert.Equal(t, Position{board: "oo       ", turn: "o"}.BestMove(), 2)
+	})
+}
+
+func TestIsGameEnd(t *testing.T) {
+	t.Run("test not end", func(t *testing.T) {
+		assert.False(t, initPosition().IsGameEnd())
+	})
+
+	t.Run("test end, x wins", func(t *testing.T) {
+		assert.True(t, Position{board: "xxx      "}.IsGameEnd())
+	})
+
+	t.Run("test end, o wins", func(t *testing.T) {
+		assert.True(t, Position{board: "ooo      "}.IsGameEnd())
+	})
+
+	t.Run("test end, draw", func(t *testing.T) {
+		assert.True(t, Position{board: "xoxxoxoxo"}.IsGameEnd())
+	})
+}
+
 /* Asserts ****************************************************************************/
 
 func assertPositionEqual(t *testing.T, got, want Position) {

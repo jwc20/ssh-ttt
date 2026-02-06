@@ -16,6 +16,13 @@ type Position struct {
 	board string
 }
 
+func initPosition() *Position {
+	return &Position{
+		turn:  "x",
+		board: strings.Repeat(" ", 9),
+	}
+}
+
 func (p Position) choose(x, o string) string {
 	if p.turn == "x" {
 		return x
@@ -152,9 +159,37 @@ func (p Position) String() string {
 	return fmt.Sprintf("%s.%s", p.turn, p.board)
 }
 
-func initPosition() *Position {
-	return &Position{
-		turn:  "x",
-		board: strings.Repeat(" ", 9),
+func (p Position) BestMove() int {
+	bestIdx := -1
+	var bestVal int
+
+	if p.turn == "x" {
+		bestVal = math.MinInt
+	} else {
+		bestVal = math.MaxInt
 	}
+
+	for _, idx := range p.PossibleMoves() {
+		next := p.Copy()
+		next.Move(idx)
+		val := next.minimax()
+
+		if p.turn == "x" {
+			if val > bestVal {
+				bestVal = val
+				bestIdx = idx
+			}
+		} else {
+			if val < bestVal {
+				bestVal = val
+				bestIdx = idx
+			}
+		}
+	}
+
+	return bestIdx
+}
+
+func (p Position) IsGameEnd() bool {
+	return p.isWinFor("x") || p.isWinFor("o") || strings.Count(p.board, " ") == 0
 }
