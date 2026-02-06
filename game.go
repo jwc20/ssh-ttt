@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 )
 
 const (
@@ -14,18 +15,20 @@ const (
 
 type Game struct {
 	position *Position
-	reader   *bufio.Scanner
+	in       *bufio.Scanner
+	out      io.Writer
 }
 
 func initGame() *Game {
 	return &Game{
 		position: initPosition(),
-		reader:   bufio.NewScanner(os.Stdin),
+		in:       bufio.NewScanner(os.Stdin),
+		out:      os.Stdout,
 	}
 }
 
 func (g *Game) askForPlayer(in io.Reader) int {
-	g.reader = bufio.NewScanner(in)
+	g.in = bufio.NewScanner(in)
 	reader := g.readLine()
 	if reader == "1" {
 		return COMPUTER
@@ -42,7 +45,33 @@ func (g *Game) askForPlayer(in io.Reader) int {
 	return -1
 }
 
+func (g *Game) askForMove() int {
+	fmt.Fprint(g.out, "move: ")
+	idx, _ := strconv.Atoi(g.readLine())
+	if stringInSlice(idx, []int{0, 1, 2, 3, 4, 5, 6, 7, 8}) {
+		if g.position.board[idx] == ' ' {
+			return idx
+		}
+	}
+	return -1
+}
+
+func (g *Game) Play() {
+	
+}
+
+/********************************************************************/
+
 func (g *Game) readLine() string {
-	g.reader.Scan()
-	return g.reader.Text()
+	g.in.Scan()
+	return g.in.Text()
+}
+
+func stringInSlice(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }
