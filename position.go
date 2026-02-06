@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -22,7 +23,7 @@ func (p Position) choose(x, o string) string {
 	return o
 }
 
-func (p Position) Move(i int) Position {
+func (p *Position) Move(i int) *Position {
 	p.board = p.board[:i] + p.turn + p.board[i+1:]
 	p.turn = p.choose("o", "x")
 	return p
@@ -82,25 +83,77 @@ func (p Position) isWinFor(piece string) bool {
 	return false
 }
 
+type CacheKey struct {
+	board string
+	turn  string
+}
+
+var minimaxCache = map[CacheKey]int{}
+
+func (p *Position) CacheKey() CacheKey {
+	return CacheKey{p.board, p.turn}
+}
+
 func (p Position) minimax() int {
+	key := p.CacheKey()
+
+	if value, ok := minimaxCache[key]; ok {
+		return value
+	}
+
+	var value int
+
 	if p.isWinFor("x") {
 		return strings.Count(p.board, " ")
-	}
-	if p.isWinFor("o") {
+	} else if p.isWinFor("o") {
 		return -strings.Count(p.board, " ")
-	}
-	if strings.Count(p.board, " ") == 0 {
+	} else if strings.Count(p.board, " ") == 0 {
 		return 0
+	} else {
+		if p.turn == "x" {
+			value = math.MinInt
+		} else {
+			value = math.MaxInt
+		}
+
+		for _, idx := range p.PossibleMoves() {
+			next := p.Copy()
+			next = next.Move(idx)
+
+			v := next.minimax()
+
+			if p.turn == "x" {
+				if v > value {
+					value = v
+				}
+			} else {
+				if v < value {
+					value = v
+				}
+			}
+		}
 	}
-	return 0
+
+	minimaxCache[key] = value
+	return value
+}
+
+func (p *Position) Copy() *Position {
+	newBoard := make([]byte, len(p.board))
+	copy(newBoard, p.board)
+
+	return &Position{
+		board: string(newBoard),
+		turn:  p.turn,
+	}
 }
 
 func (p Position) String() string {
 	return fmt.Sprintf("%s.%s", p.turn, p.board)
 }
 
-func initPosition() Position {
-	return Position{
+func initPosition() *Position {
+	return &Position{
 		turn:  "x",
 		board: strings.Repeat(" ", 9),
 	}

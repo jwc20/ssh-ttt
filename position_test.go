@@ -31,7 +31,7 @@ func TestPosition(t *testing.T) {
 
 	t.Run("test equal", func(t *testing.T) {
 		position := initPosition()
-		assertPositionEqual(t, position.Move(1), Position{"o", " x       "})
+		assertPositionEqual(t, *position.Move(1), Position{"o", " x       "})
 	})
 
 	t.Run("test possible moves", func(t *testing.T) {
@@ -71,6 +71,14 @@ func TestMinimax(t *testing.T) {
 
 	t.Run("test draw", func(t *testing.T) {
 		assert.Equal(t, Position{board: "xoxxoxoxo"}.minimax(), 0)
+	})
+
+	t.Run("test x wins in one", func(t *testing.T) {
+		assert.Equal(t, Position{board: "xx       ", turn: "x"}.minimax(), 6)
+	})
+
+	t.Run("test o wins in one", func(t *testing.T) {
+		assert.Equal(t, Position{board: "oo       ", turn: "o"}.minimax(), -6)
 	})
 }
 
