@@ -1,6 +1,8 @@
 package main
 
 import (
+	"io"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,4 +14,32 @@ func TestGame(t *testing.T) {
 	t.Run("test init", func(t *testing.T) {
 		assert.Equal(t, game.position, initPosition())
 	})
+
+	t.Run("test quit", func(t *testing.T) {
+		in := userSends("q")
+		assert.Equal(t, game.askForPlayer(in), -1)
+	})
+
+	t.Run("test computer", func(t *testing.T) {
+		in := userSends("1")
+		assert.Equal(t, game.askForPlayer(in), COMPUTER)
+	})
+
+	t.Run("test human", func(t *testing.T) {
+		in := userSends("2")
+		assert.Equal(t, game.askForPlayer(in), HUMAN)
+	})
+
+	t.Run("test bad input", func(t *testing.T) {
+		in := userSends("b")
+		assert.Equal(t, game.askForPlayer(in), -1)
+	})
+
+	t.Run("test ask for move", func(t *testing.T) {
+		assert.Equal(t, game.askForMove(), -1)
+	})
+}
+
+func userSends(messages ...string) io.Reader {
+	return strings.NewReader(strings.Join(messages, "\n"))
 }
