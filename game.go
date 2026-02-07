@@ -1,4 +1,4 @@
-package main
+package ttt
 
 import (
 	"bufio"
@@ -57,7 +57,7 @@ func (g *Game) askForMove() int {
 }
 
 func (g *Game) Play() {
-	
+
 }
 
 /********************************************************************/

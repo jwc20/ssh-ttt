@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	ttt "github.com/jwc20/ssh-ttt"
 )
 
 const dbFileName = "game.db.json"
@@ -15,13 +17,13 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 
-	store, err := NewFileSystemPlayerStore(db)
+	store, err := ttt.NewFileSystemPlayerStore(db)
 
 	if err != nil {
 		log.Fatalf("problem creating file system player store, %v ", err)
 	}
 
-	server := NewPlayerServer(store)
+	server := ttt.NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":5002", server); err != nil {
 		log.Fatalf("could not listen on port 5002 %v", err)
