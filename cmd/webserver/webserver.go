@@ -18,10 +18,9 @@ func main() {
 	}
 	defer close()
 
-	router := gin.Default()
-
 	db := store.Database
 
+	router := gin.Default()
 	router.GET("/users", handlers.ListUser(db))
 	router.POST("/users", handlers.CreateUser(db))
 
