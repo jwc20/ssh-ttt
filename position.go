@@ -1,4 +1,4 @@
-package main
+package ttt
 
 import (
 	"fmt"
@@ -12,33 +12,33 @@ const (
 )
 
 type Position struct {
-	turn  string
-	board string
+	Turn  string
+	Board string
 }
 
-func initPosition() *Position {
+func InitPosition() *Position {
 	return &Position{
-		turn:  "x",
-		board: strings.Repeat(" ", 9),
+		Turn:  "x",
+		Board: strings.Repeat(" ", 9),
 	}
 }
 
 func (p Position) choose(x, o string) string {
-	if p.turn == "x" {
+	if p.Turn == "x" {
 		return x
 	}
 	return o
 }
 
 func (p *Position) Move(i int) *Position {
-	p.board = p.board[:i] + p.turn + p.board[i+1:]
-	p.turn = p.choose("o", "x")
+	p.Board = p.Board[:i] + p.Turn + p.Board[i+1:]
+	p.Turn = p.choose("o", "x")
 	return p
 }
 
 func (p Position) PossibleMoves() []int {
 	var result []int
-	for i, piece := range strings.Split(p.board, "") {
+	for i, piece := range strings.Split(p.Board, "") {
 		if piece == " " {
 			result = append(result, i)
 		}
@@ -46,42 +46,38 @@ func (p Position) PossibleMoves() []int {
 	return result
 }
 
-func (p Position) isWinFor(piece string) bool {
+func (p Position) IsWinFor(piece string) bool {
 	isMatch := func(line string) bool {
 		return strings.Count(line, piece) == DIM
 	}
 
-	// 1. Check Rows
 	for i := 0; i < SIZE; i += DIM {
-		if isMatch(p.board[i : i+DIM]) {
+		if isMatch(p.Board[i : i+DIM]) {
 			return true
 		}
 	}
 
-	// 2. Check Columns
 	for i := range DIM {
 		col := ""
 		for j := i; j < SIZE; j += DIM {
-			col += string(p.board[j])
+			col += string(p.Board[j])
 		}
 		if isMatch(col) {
 			return true
 		}
 	}
 
-	// 3. Major Diagonal: Index sequence [0, DIM+1, 2(DIM+1), ...]
 	majDiag := ""
 	for i := 0; i < SIZE; i += DIM + 1 {
-		majDiag += string(p.board[i])
+		majDiag += string(p.Board[i])
 	}
 	if isMatch(majDiag) {
 		return true
 	}
 
-	// 4. Minor Diagonal: Index sequence [DIM-1, 2(DIM-1), ..., SIZE-DIM]
 	minDiag := ""
 	for i := DIM - 1; i <= SIZE-DIM; i += DIM - 1 {
-		minDiag += string(p.board[i])
+		minDiag += string(p.Board[i])
 	}
 	if isMatch(minDiag) {
 		return true
@@ -90,19 +86,19 @@ func (p Position) isWinFor(piece string) bool {
 	return false
 }
 
-type CacheKey struct {
+type cacheKey struct {
 	board string
 	turn  string
 }
 
-var minimaxCache = map[CacheKey]int{}
+var minimaxCache = map[cacheKey]int{}
 
-func (p *Position) CacheKey() CacheKey {
-	return CacheKey{p.board, p.turn}
+func (p *Position) cacheKey() cacheKey {
+	return cacheKey{p.Board, p.Turn}
 }
 
 func (p Position) minimax() int {
-	key := p.CacheKey()
+	key := p.cacheKey()
 
 	if value, ok := minimaxCache[key]; ok {
 		return value
@@ -110,14 +106,14 @@ func (p Position) minimax() int {
 
 	var value int
 
-	if p.isWinFor("x") {
-		return strings.Count(p.board, " ")
-	} else if p.isWinFor("o") {
-		return -strings.Count(p.board, " ")
-	} else if strings.Count(p.board, " ") == 0 {
+	if p.IsWinFor("x") {
+		return strings.Count(p.Board, " ")
+	} else if p.IsWinFor("o") {
+		return -strings.Count(p.Board, " ")
+	} else if strings.Count(p.Board, " ") == 0 {
 		return 0
 	} else {
-		if p.turn == "x" {
+		if p.Turn == "x" {
 			value = math.MinInt
 		} else {
 			value = math.MaxInt
@@ -129,7 +125,7 @@ func (p Position) minimax() int {
 
 			v := next.minimax()
 
-			if p.turn == "x" {
+			if p.Turn == "x" {
 				if v > value {
 					value = v
 				}
@@ -146,24 +142,24 @@ func (p Position) minimax() int {
 }
 
 func (p *Position) Copy() *Position {
-	newBoard := make([]byte, len(p.board))
-	copy(newBoard, p.board)
+	newBoard := make([]byte, len(p.Board))
+	copy(newBoard, p.Board)
 
 	return &Position{
-		board: string(newBoard),
-		turn:  p.turn,
+		Board: string(newBoard),
+		Turn:  p.Turn,
 	}
 }
 
 func (p Position) String() string {
-	return fmt.Sprintf("%s.%s", p.turn, p.board)
+	return fmt.Sprintf("%s.%s", p.Turn, p.Board)
 }
 
 func (p Position) BestMove() int {
 	bestIdx := -1
 	var bestVal int
 
-	if p.turn == "x" {
+	if p.Turn == "x" {
 		bestVal = math.MinInt
 	} else {
 		bestVal = math.MaxInt
@@ -174,7 +170,7 @@ func (p Position) BestMove() int {
 		next.Move(idx)
 		val := next.minimax()
 
-		if p.turn == "x" {
+		if p.Turn == "x" {
 			if val > bestVal {
 				bestVal = val
 				bestIdx = idx
@@ -191,5 +187,5 @@ func (p Position) BestMove() int {
 }
 
 func (p Position) IsGameEnd() bool {
-	return p.isWinFor("x") || p.isWinFor("o") || strings.Count(p.board, " ") == 0
+	return p.IsWinFor("x") || p.IsWinFor("o") || strings.Count(p.Board, " ") == 0
 }
