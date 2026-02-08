@@ -1,31 +1,60 @@
 package main
 
 import (
+	"database/sql"
 	"log"
-	"net/http"
-	"os"
 
-	ttt "github.com/jwc20/ssh-ttt"
+	"github.com/gin-gonic/gin"
+	"github.com/jwc20/ssh-ttt/handlers"
+	_ "github.com/mattn/go-sqlite3"
 )
 
-const dbFileName = "game.db.json"
+var db *sql.DB
+
+func initDB() {
+	var err error
+	db, err = sql.Open("sqlite3", "./app.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createUsersTable := `CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		public_key TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+
+	_, err = db.Exec(createUsersTable)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createRoomsTable := `CREATE TABLE IF NOT EXISTS rooms (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL,
+		winner TEXT NOT NULL,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		finished_at DATETIME
+	);`
+
+	_, err = db.Exec(createRoomsTable)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 
 func main() {
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	initDB()
+	router := gin.Default()
 
-	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
-	}
+	router.GET("/users", handlers.ListUser(db))
+	router.POST("/users", handlers.CreateUser(db))
 
-	store, err := ttt.NewFileSystemPlayerStore(db)
+	port := ":8080"
+	log.Printf("Server is running on http://localhost%s", port)
 
-	if err != nil {
-		log.Fatalf("problem creating file system player store, %v ", err)
-	}
-
-	server := ttt.NewPlayerServer(store)
-
-	if err := http.ListenAndServe(":5002", server); err != nil {
-		log.Fatalf("could not listen on port 5002 %v", err)
+	if err := router.Run(port); err != nil {
+		log.Fatalf("Error starting server: %s", err)
 	}
 }
