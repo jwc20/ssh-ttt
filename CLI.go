@@ -2,29 +2,74 @@ package ttt
 
 import (
 	"bufio"
+	"fmt"
 	"io"
-	"strings"
+	"strconv"
 )
 
-type CLI struct {
-	playerStore PlayerStore
-	in          *bufio.Scanner
+const PlayerPrompt = "Player %s, enter your move (1-9): "
+const BadMoveInputErrMsg = "Bad value received for move, please enter a number between 1 and 9\n"
+const SquareTakenErrMsg = "That square is already taken, please choose another\n"
+const DrawMsg = "It's a draw!\n"
+const WinMsg = "Player %s wins!\n"
+const BoardHeader = "\nCurrent board:\n"
+
+type TicTacToeGame interface {
+	Game
+	MakeMove(position int) error
+	Board() string
+	CurrentPlayer() string
+	IsOver() bool
+	Winner() string
 }
 
-func NewCLI(store PlayerStore, in io.Reader) *CLI {
+type CLI struct {
+	in   *bufio.Scanner
+	out  io.Writer
+	game TicTacToeGame
+}
+
+func NewCLI(in io.Reader, out io.Writer, game TicTacToeGame) *CLI {
 	return &CLI{
-		playerStore: store,
-		in:          bufio.NewScanner(in),
+		in:   bufio.NewScanner(in),
+		out:  out,
+		game: game,
 	}
 }
 
-func (cli *CLI) PlayTTT() {
-	userInput := cli.readLine()
-	cli.playerStore.RecordWin(extractWinner(userInput))
-}
+func (cli *CLI) PlayGame() {
+	cli.game.Start(2)
 
-func extractWinner(userInput string) string {
-	return strings.Replace(userInput, " wins", "", 1)
+	for !cli.game.IsOver() {
+		fmt.Fprint(cli.out, BoardHeader)
+		fmt.Fprint(cli.out, cli.game.Board())
+		fmt.Fprintf(cli.out, PlayerPrompt, cli.game.CurrentPlayer())
+
+		input := cli.readLine()
+		position, err := strconv.Atoi(input)
+
+		if err != nil || position < 1 || position > 9 {
+			fmt.Fprint(cli.out, BadMoveInputErrMsg)
+			continue
+		}
+
+		err = cli.game.MakeMove(position)
+		if err != nil {
+			fmt.Fprint(cli.out, SquareTakenErrMsg)
+			continue
+		}
+	}
+
+	fmt.Fprint(cli.out, BoardHeader)
+	fmt.Fprint(cli.out, cli.game.Board())
+
+	winner := cli.game.Winner()
+	if winner != "" {
+		fmt.Fprintf(cli.out, WinMsg, winner)
+		cli.game.Finish(winner)
+	} else {
+		fmt.Fprint(cli.out, DrawMsg)
+	}
 }
 
 func (cli *CLI) readLine() string {

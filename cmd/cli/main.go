@@ -18,8 +18,9 @@ func main() {
 	}
 	defer close()
 
-	fmt.Println("Let's play tic-tac-toe")
-	fmt.Println("Type {Name} wins to record a win")
+	fmt.Println("Let's play Tic-Tac-Toe!")
 
-	ttt.NewCLI(store, os.Stdin).PlayTTT()
+	game := ttt.NewTicTacToe(store)
+	cli := ttt.NewCLI(os.Stdin, os.Stdout, game)
+	cli.PlayGame()
 }
